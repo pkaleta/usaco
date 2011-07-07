@@ -1,7 +1,7 @@
 /*
 ID: piotrek4
 LANG: C++
-PROG: 
+PROG: %s
 */
 
 #include <cstdio>
@@ -18,8 +18,8 @@ PROG:
 using namespace std;
 
 
-ifstream fin(".in");
-ofstream fout(".out");
+ifstream fin("%s.in");
+ofstream fout("%s.out");
 
 
 int main() {
