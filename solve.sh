@@ -3,7 +3,7 @@
 
 if [ $# -eq 2 ]; then
     USACO_DIR="/home/insane/algo/usaco"
-    SECTION_NAME="Section ${1}.0"
+    SECTION_NAME="Section ${1}"
     SECTION_DIR="${USACO_DIR}/${SECTION_NAME}"
     TASK_DIR="${SECTION_DIR}/${2}"
     FILE_NAME="${TASK_DIR}/${2}.cpp"
