@@ -23,12 +23,12 @@ const int SIZE = 8;
 
 ifstream fin("msquare.in");
 ofstream fout("msquare.out");
-int final[SIZE];
+vector<int> final(SIZE);
 string ret;
+set<vector<int> > visited;
 
-
-bool cmp(int* a, int* b) {
-    for (int i = 0; i < 8; ++i) {
+bool cmp(vector<int> a, vector<int> b) {
+    for (int i = 0; i < SIZE; ++i) {
         if (a[i] != b[i]) {
             return false;
         }
@@ -36,14 +36,17 @@ bool cmp(int* a, int* b) {
     return true;
 }
 
-void transformA(int* a, int* ret) {
+vector<int> transformA(vector<int> a) {
+    vector<int> ret(SIZE);
     for (int i = 0; i < 4; ++i) {
         ret[i] = a[7-i];
         ret[7-i] = a[i];
     }
+    return ret;
 }
 
-void transformB(int* a, int* ret) {
+vector<int> transformB(vector<int> a) {
+    vector<int> ret(SIZE);
     for (int i = 0; i < 4; ++i) {
         ret[(i+1)%4] = a[i];
         if (i == 3)
@@ -51,53 +54,62 @@ void transformB(int* a, int* ret) {
         else
             ret[6-i] = a[7-i];
     }
+    return ret;
 }
 
-void transformC(int* a, int* ret) {
-    for (int i = 0; i < 8; ++i)
+vector<int> transformC(vector<int> a) {
+    vector<int> ret(SIZE);
+    for (int i = 0; i < SIZE; ++i)
         ret[i] = a[i];
     ret[2] = a[1];
     ret[1] = a[6];
     ret[6] = a[5];
     ret[5] = a[2];
+    return ret;
 }
 
-void dfs(int* cur, string s, int countA, int lastB, int lastC) {
-    if (cmp(cur, final)) {
-        if (s.size() < ret.size()) ret = s;
-        else if (s < ret) ret = s;
-        return;
-    }
-    if (s.size() < 15) {
-        if (countA < 2) {
-            int ra[SIZE];
-            transformA(cur, ra);
-            dfs(ra, s + "A", countA + 1, 0, 0);
-        }
-        if (lastB < 3) {
-            int rb[SIZE];
-            transformB(cur, rb);
-            dfs(rb, s + "B", countA, lastB + 1, 0);
-        }
-        if (lastC < 3) {
-            int rc[SIZE];
-            transformC(cur, rc);
-            dfs(rc, s + "C", countA, 0, lastC + 1);
-        }
+string bfs(vector<int> cur) {
+    queue<pair<vector<int>, string> > q;
+    string s;
+    q.push(make_pair(cur, ""));
+
+    while (!q.empty()) {
+        pair<vector<int>, string> p = q.front();
+        q.pop();
+        cur = p.first;
+        s = p.second;
+
+//        for (int i = 0; i < SIZE; ++i)
+//            cout << cur[i] << " ";
+//        cout << endl;
+
+
+
+        if (visited.find(cur) != visited.end()) continue;
+        visited.insert(cur);
+
+        if (cmp(cur, final))
+            return s;
+
+        vector<int> a = transformA(cur);
+        if (visited.find(a) == visited.end()) q.push(make_pair(a, s + "A"));
+        vector<int> b = transformB(cur);
+        if (visited.find(b) == visited.end()) q.push(make_pair(b, s + "B"));
+        vector<int> c = transformC(cur);
+        if (visited.find(c) == visited.end()) q.push(make_pair(c, s + "C"));
     }
 }
 
 
 int main() {
-    int init[SIZE];
+    vector<int> init(SIZE);
 
-    for (int i = 0; i < 8; ++i) {
+    for (int i = 0; i < SIZE; ++i) {
         fin >> final[i];
         init[i] = i+1;
     }
 
-    ret = "ZZZZZZZZZZZZZZZZZZZZZZZZZ";
-    dfs(init, "", 0, 0, 0);
+    string ret = bfs(init);
 
     fout << ret.size() << endl << ret << endl;
 
